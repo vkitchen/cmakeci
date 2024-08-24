@@ -10,7 +10,7 @@ on:
 
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
+  BUILD_TYPE: Debug
 
 jobs:
   build:
@@ -37,5 +37,18 @@ jobs:
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest -C ${{env.BUILD_TYPE}}
 
-    - name: Run
-      run: build\cmakeci\Release\cmakeci.exe
+    - name: Install OpenCppCoverage
+      run: |
+        choco install OpenCppCoverage
+        echo "C:\Program Files\OpenCppCoverage" >> $env:GITHUB_PATH
+
+    - name: Generate Coverage Report
+      shell: cmd
+      run: OpenCppCoverage --modules Debug --export_type cobertura:cmakeci.xml -- build\cmakeci\Debug\cmakeci.exe
+
+    - name: Upload Report to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        fail_ci_if_error: true
+        files: cmakeci.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
