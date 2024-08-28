@@ -12,4 +12,6 @@ endif()
 project ("cmakeci")
 
 # Include sub-projects.
-add_subdirectory ("cmakeci")
+add_subdirectory ("src")
+add_subdirectory ("external/Unity")
+add_subdirectory ("test")
